@@ -5,7 +5,7 @@ HustleHub+ is a secure freelance marketplace being developed for the INSY7314 Po
 > **Assessment stage:** POE Part 1 — Secure Backend Foundations  
 > **Student:** Antonio Bechev - ST10435330 
 > **Repository:** https://github.com/EMGPSD/insy7314-g1-2026-poe-part-1-st10435330.git
-> **Demonstration video:** 
+> **Demonstration video:** https://youtu.be/SekUaTo0XDA
 
 ## Intended users
 
