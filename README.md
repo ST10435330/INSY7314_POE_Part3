@@ -249,24 +249,6 @@ After running the Postman collection, capture clear screenshots showing the requ
 
 Save these in `screenshots/`. Do not expose your `.env` file or JWT secret in any screenshot.
 
-## Demonstration video plan
-
-Keep the recording concise and show the following sequence:
-
-1. Introduce HustleHub+ and explain that Part 1 provides the secure API foundation.
-2. Briefly show the MERN architecture diagram in this README and identify the current Part 1 components.
-3. Show `.env.example` and `.gitignore` without revealing the real `.env` secret.
-4. Run `npm test` and show all automated tests passing.
-5. Run `npm start` and show the HTTPS URL in the terminal.
-6. In Postman, run successful registration and explain that only safe user fields are returned.
-7. Show `data/users.json` briefly and point out that the password is a bcrypt hash, not plain text. Do not reveal or read the hash aloud.
-8. Run successful login and show that a JWT is generated.
-9. Call `/api/users/me` with the token and receive `200`.
-10. Remove or alter the token and show the controlled `401` response.
-11. Run invalid registration or incorrect login and show the controlled response.
-12. End by noting that MongoDB, React, marketplace features, transactions, income, and tax estimates will be added in later parts.
-
-Upload the video using the method required by the lecturer and place the accessible link near the top of this README.
 
 ## Known Part 1 limitations and future work
 
