@@ -1,0 +1,10 @@
+node_modules/
+.env
+certs/*.key
+certs/*.crt
+data/users.json
+coverage/
+npm-debug.log*
+.DS_Store
+.idea/
+.vscode/
