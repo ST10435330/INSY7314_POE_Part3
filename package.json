@@ -9,7 +9,8 @@
     "start": "node src/server.js",
     "setup:cert": "node scripts/generate-cert.js",
     "test": "node --test",
-    "check": "npm test"
+    "check": "npm test",
+    "db": "node scripts/local-db.js"
   },
   "engines": {
     "node": ">=20"
