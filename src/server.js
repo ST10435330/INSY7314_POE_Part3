@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const https = require('node:https');
 
+const User = require('./models/User');
 const app = require('./app');
 const config = require('./config');
 const database = require('./database');
@@ -15,6 +16,7 @@ async function startServer() {
   };
 
   await database.connect(config.mongodbUri);
+  await User.init();
 
   const server = https.createServer(credentials, app);
 
