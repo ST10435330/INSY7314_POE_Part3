@@ -22,9 +22,12 @@
     "express-rate-limit": "^8.1.0",
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.24.5",
+    "sanitize-html": "^2.18.0"
   },
   "devDependencies": {
+    "mongodb-memory-server": "^10.4.3",
     "selfsigned": "^3.0.1",
     "supertest": "^7.1.4"
   },
