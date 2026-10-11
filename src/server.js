@@ -5,6 +5,10 @@ const User = require('./models/User');
 const app = require('./app');
 const config = require('./config');
 const database = require('./database');
+const Gig = require('./models/Gig');
+
+const Booking = require('./models/Booking');
+const Transaction = require('./models/Transaction');
 
 async function startServer() {
   config.jwtSecret();
@@ -17,6 +21,11 @@ async function startServer() {
 
   await database.connect(config.mongodbUri);
   await User.init();
+  await Gig.init();
+  await Promise.all([
+  Booking.init(),
+  Transaction.init()
+]);
 
   const server = https.createServer(credentials, app);
 
