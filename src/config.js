@@ -37,7 +37,4 @@ module.exports = {
   certificatePath: path.join(rootDir, 'certs', 'localhost.crt'),
   privateKeyPath: path.join(rootDir, 'certs', 'localhost.key'),
 
-  usersFilePath:
-    process.env.USERS_FILE_PATH ||
-    path.join(rootDir, 'data', 'users.json')
 };
