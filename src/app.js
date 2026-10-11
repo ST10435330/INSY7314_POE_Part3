@@ -8,6 +8,7 @@ const userRoutes = require('./routes/userRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 const gigRoutes = require('./routes/gigRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const financeRoutes = require('./routes/financeRoutes');
 
 const app = express();
 app.disable('x-powered-by');
@@ -31,6 +32,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/gigs', gigRoutes);
 
 app.use('/api/bookings', bookingRoutes);
+app.use('/api', financeRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
