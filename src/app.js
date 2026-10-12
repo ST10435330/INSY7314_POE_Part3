@@ -19,6 +19,11 @@ app.use((req, res, next) => {
   next();
 });
 app.use(helmet());
+//no store tells the browser not to save any API responses such as tokens and potential financial info
+app.use('/api', (_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
 app.use(cors({
   origin: config.allowedOrigin,
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
