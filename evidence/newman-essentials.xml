@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="HustleHub+ Part 2 - Essential Tests" tests="20" time="2.250">
+  <testsuite name="01 - Register and log in - run first / Register Owner" id="54f94f4a-21be-430c-adef-b5c34ee5c656" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.309">
+    <testcase name="Response is JSON" time="0.309" classname="01RegisterAndLogInRunFirstRegisterOwner"/>
+    <testcase name="Security headers are present" time="0.309" classname="01RegisterAndLogInRunFirstRegisterOwner"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.309" classname="01RegisterAndLogInRunFirstRegisterOwner"/>
+    <testcase name="Expected HTTP 201" time="0.309" classname="01RegisterAndLogInRunFirstRegisterOwner"/>
+    <testcase name="Registration returns a safe user and the selected role" time="0.309" classname="01RegisterAndLogInRunFirstRegisterOwner"/>
+  </testsuite>
+  <testsuite name="01 - Register and log in - run first / Register OtherFreelancer" id="2b85fba8-1fcb-4e5b-a9a8-d0a8b5fdc197" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.278">
+    <testcase name="Response is JSON" time="0.278" classname="01RegisterAndLogInRunFirstRegisterOtherFreelancer"/>
+    <testcase name="Security headers are present" time="0.278" classname="01RegisterAndLogInRunFirstRegisterOtherFreelancer"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.278" classname="01RegisterAndLogInRunFirstRegisterOtherFreelancer"/>
+    <testcase name="Expected HTTP 201" time="0.278" classname="01RegisterAndLogInRunFirstRegisterOtherFreelancer"/>
+    <testcase name="Registration returns a safe user and the selected role" time="0.278" classname="01RegisterAndLogInRunFirstRegisterOtherFreelancer"/>
+  </testsuite>
+  <testsuite name="01 - Register and log in - run first / Register Client" id="fee9958a-6666-4d37-a487-4d6d7657cf90" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.264">
+    <testcase name="Response is JSON" time="0.264" classname="01RegisterAndLogInRunFirstRegisterClient"/>
+    <testcase name="Security headers are present" time="0.264" classname="01RegisterAndLogInRunFirstRegisterClient"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.264" classname="01RegisterAndLogInRunFirstRegisterClient"/>
+    <testcase name="Expected HTTP 201" time="0.264" classname="01RegisterAndLogInRunFirstRegisterClient"/>
+    <testcase name="Registration returns a safe user and the selected role" time="0.264" classname="01RegisterAndLogInRunFirstRegisterClient"/>
+  </testsuite>
+  <testsuite name="01 - Register and log in - run first / Log in Owner - save token automatically" id="6dc04bdf-e6a6-4303-8b26-0c6b76cca0bc" timestamp="2026-10-12T11:50:12.197Z" tests="6" failures="0" errors="0" time="0.256">
+    <testcase name="Response is JSON" time="0.256" classname="01RegisterAndLogInRunFirstLogInOwnerSaveTokenAutomatically"/>
+    <testcase name="Security headers are present" time="0.256" classname="01RegisterAndLogInRunFirstLogInOwnerSaveTokenAutomatically"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.256" classname="01RegisterAndLogInRunFirstLogInOwnerSaveTokenAutomatically"/>
+    <testcase name="Expected HTTP 200" time="0.256" classname="01RegisterAndLogInRunFirstLogInOwnerSaveTokenAutomatically"/>
+    <testcase name="Login returns a token and the correct account" time="0.256" classname="01RegisterAndLogInRunFirstLogInOwnerSaveTokenAutomatically"/>
+    <testcase name="JWT contains user identity, role and expiry" time="0.256" classname="01RegisterAndLogInRunFirstLogInOwnerSaveTokenAutomatically"/>
+  </testsuite>
+  <testsuite name="01 - Register and log in - run first / Log in OtherFreelancer - save token automatically" id="1c94b6fc-a329-4019-81da-6df2b37921d1" timestamp="2026-10-12T11:50:12.197Z" tests="6" failures="0" errors="0" time="0.257">
+    <testcase name="Response is JSON" time="0.257" classname="01RegisterAndLogInRunFirstLogInOtherFreelancerSaveTokenAutomatically"/>
+    <testcase name="Security headers are present" time="0.257" classname="01RegisterAndLogInRunFirstLogInOtherFreelancerSaveTokenAutomatically"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.257" classname="01RegisterAndLogInRunFirstLogInOtherFreelancerSaveTokenAutomatically"/>
+    <testcase name="Expected HTTP 200" time="0.257" classname="01RegisterAndLogInRunFirstLogInOtherFreelancerSaveTokenAutomatically"/>
+    <testcase name="Login returns a token and the correct account" time="0.257" classname="01RegisterAndLogInRunFirstLogInOtherFreelancerSaveTokenAutomatically"/>
+    <testcase name="JWT contains user identity, role and expiry" time="0.257" classname="01RegisterAndLogInRunFirstLogInOtherFreelancerSaveTokenAutomatically"/>
+  </testsuite>
+  <testsuite name="01 - Register and log in - run first / Log in Client - save token automatically" id="857ecfa1-cd16-4055-a16d-ac0e56d9f871" timestamp="2026-10-12T11:50:12.197Z" tests="6" failures="0" errors="0" time="0.259">
+    <testcase name="Response is JSON" time="0.259" classname="01RegisterAndLogInRunFirstLogInClientSaveTokenAutomatically"/>
+    <testcase name="Security headers are present" time="0.259" classname="01RegisterAndLogInRunFirstLogInClientSaveTokenAutomatically"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.259" classname="01RegisterAndLogInRunFirstLogInClientSaveTokenAutomatically"/>
+    <testcase name="Expected HTTP 200" time="0.259" classname="01RegisterAndLogInRunFirstLogInClientSaveTokenAutomatically"/>
+    <testcase name="Login returns a token and the correct account" time="0.259" classname="01RegisterAndLogInRunFirstLogInClientSaveTokenAutomatically"/>
+    <testcase name="JWT contains user identity, role and expiry" time="0.259" classname="01RegisterAndLogInRunFirstLogInClientSaveTokenAutomatically"/>
+  </testsuite>
+  <testsuite name="01 - Register and log in - run first / Duplicate account" id="28925b84-354a-4e58-acda-c285d4c3d8b6" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.255">
+    <testcase name="Response is JSON" time="0.255" classname="01RegisterAndLogInRunFirstDuplicateAccount"/>
+    <testcase name="Security headers are present" time="0.255" classname="01RegisterAndLogInRunFirstDuplicateAccount"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.255" classname="01RegisterAndLogInRunFirstDuplicateAccount"/>
+    <testcase name="Error uses the controlled error structure" time="0.255" classname="01RegisterAndLogInRunFirstDuplicateAccount"/>
+    <testcase name="Expected HTTP 409" time="0.255" classname="01RegisterAndLogInRunFirstDuplicateAccount"/>
+  </testsuite>
+  <testsuite name="01 - Register and log in - run first / Wrong password" id="a12f1a12-34e6-4e3c-b1c2-316b62f1ce5f" timestamp="2026-10-12T11:50:12.197Z" tests="6" failures="0" errors="0" time="0.257">
+    <testcase name="Response is JSON" time="0.257" classname="01RegisterAndLogInRunFirstWrongPassword"/>
+    <testcase name="Security headers are present" time="0.257" classname="01RegisterAndLogInRunFirstWrongPassword"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.257" classname="01RegisterAndLogInRunFirstWrongPassword"/>
+    <testcase name="Error uses the controlled error structure" time="0.257" classname="01RegisterAndLogInRunFirstWrongPassword"/>
+    <testcase name="Expected HTTP 401" time="0.257" classname="01RegisterAndLogInRunFirstWrongPassword"/>
+    <testcase name="Expected error code" time="0.257" classname="01RegisterAndLogInRunFirstWrongPassword"/>
+  </testsuite>
+  <testsuite name="01 - Register and log in - run first / Profile without authentication" id="3ec897b8-da84-4b8b-89c9-cdd3b74a1266" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.003">
+    <testcase name="Response is JSON" time="0.003" classname="01RegisterAndLogInRunFirstProfileWithoutAuthentication"/>
+    <testcase name="Security headers are present" time="0.003" classname="01RegisterAndLogInRunFirstProfileWithoutAuthentication"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.003" classname="01RegisterAndLogInRunFirstProfileWithoutAuthentication"/>
+    <testcase name="Error uses the controlled error structure" time="0.003" classname="01RegisterAndLogInRunFirstProfileWithoutAuthentication"/>
+    <testcase name="Expected HTTP 401" time="0.003" classname="01RegisterAndLogInRunFirstProfileWithoutAuthentication"/>
+  </testsuite>
+  <testsuite name="02 - Gigs and access controls / Freelancer creates a gig - save gig ID automatically" id="51421c88-ef00-45be-8801-9caa36f20a0b" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.018">
+    <testcase name="Response is JSON" time="0.018" classname="02GigsAndAccessControlsFreelancerCreatesAGigSaveGigIdAutomatically"/>
+    <testcase name="Security headers are present" time="0.018" classname="02GigsAndAccessControlsFreelancerCreatesAGigSaveGigIdAutomatically"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.018" classname="02GigsAndAccessControlsFreelancerCreatesAGigSaveGigIdAutomatically"/>
+    <testcase name="Expected HTTP 201" time="0.018" classname="02GigsAndAccessControlsFreelancerCreatesAGigSaveGigIdAutomatically"/>
+    <testcase name="Gig uses the authenticated owner and sanitised text" time="0.018" classname="02GigsAndAccessControlsFreelancerCreatesAGigSaveGigIdAutomatically"/>
+  </testsuite>
+  <testsuite name="02 - Gigs and access controls / Public gig browsing" id="bc9e9f07-536f-4bd5-8b3a-930af7755bb8" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.006">
+    <testcase name="Response is JSON" time="0.006" classname="02GigsAndAccessControlsPublicGigBrowsing"/>
+    <testcase name="Security headers are present" time="0.006" classname="02GigsAndAccessControlsPublicGigBrowsing"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.006" classname="02GigsAndAccessControlsPublicGigBrowsing"/>
+    <testcase name="Expected HTTP 200" time="0.006" classname="02GigsAndAccessControlsPublicGigBrowsing"/>
+    <testcase name="Public listing returns an array without account credentials" time="0.006" classname="02GigsAndAccessControlsPublicGigBrowsing"/>
+  </testsuite>
+  <testsuite name="02 - Gigs and access controls / Owner updates the gig price" id="f163ce9e-6293-4657-8434-e5dfeaa6c91b" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.018">
+    <testcase name="Response is JSON" time="0.018" classname="02GigsAndAccessControlsOwnerUpdatesTheGigPrice"/>
+    <testcase name="Security headers are present" time="0.018" classname="02GigsAndAccessControlsOwnerUpdatesTheGigPrice"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.018" classname="02GigsAndAccessControlsOwnerUpdatesTheGigPrice"/>
+    <testcase name="Expected HTTP 200" time="0.018" classname="02GigsAndAccessControlsOwnerUpdatesTheGigPrice"/>
+    <testcase name="Updated price is returned" time="0.018" classname="02GigsAndAccessControlsOwnerUpdatesTheGigPrice"/>
+  </testsuite>
+  <testsuite name="02 - Gigs and access controls / Another freelancer cannot update this gig" id="b0a23461-7ecf-44b3-a580-d7207c01ad74" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.005">
+    <testcase name="Response is JSON" time="0.005" classname="02GigsAndAccessControlsAnotherFreelancerCannotUpdateThisGig"/>
+    <testcase name="Security headers are present" time="0.005" classname="02GigsAndAccessControlsAnotherFreelancerCannotUpdateThisGig"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.005" classname="02GigsAndAccessControlsAnotherFreelancerCannotUpdateThisGig"/>
+    <testcase name="Error uses the controlled error structure" time="0.005" classname="02GigsAndAccessControlsAnotherFreelancerCannotUpdateThisGig"/>
+    <testcase name="Expected HTTP 404" time="0.005" classname="02GigsAndAccessControlsAnotherFreelancerCannotUpdateThisGig"/>
+  </testsuite>
+  <testsuite name="02 - Gigs and access controls / Reject a negative gig price" id="53949889-3162-4130-ae71-d13e78ce1cb8" timestamp="2026-10-12T11:50:12.197Z" tests="6" failures="0" errors="0" time="0.005">
+    <testcase name="Response is JSON" time="0.005" classname="02GigsAndAccessControlsRejectANegativeGigPrice"/>
+    <testcase name="Security headers are present" time="0.005" classname="02GigsAndAccessControlsRejectANegativeGigPrice"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.005" classname="02GigsAndAccessControlsRejectANegativeGigPrice"/>
+    <testcase name="Error uses the controlled error structure" time="0.005" classname="02GigsAndAccessControlsRejectANegativeGigPrice"/>
+    <testcase name="Expected HTTP 400" time="0.005" classname="02GigsAndAccessControlsRejectANegativeGigPrice"/>
+    <testcase name="Expected error code" time="0.005" classname="02GigsAndAccessControlsRejectANegativeGigPrice"/>
+  </testsuite>
+  <testsuite name="02 - Gigs and access controls / A client cannot create gigs" id="9b3fe665-87dc-4449-9141-73d4adbd94ef" timestamp="2026-10-12T11:50:12.197Z" tests="6" failures="0" errors="0" time="0.004">
+    <testcase name="Response is JSON" time="0.004" classname="02GigsAndAccessControlsAClientCannotCreateGigs"/>
+    <testcase name="Security headers are present" time="0.004" classname="02GigsAndAccessControlsAClientCannotCreateGigs"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.004" classname="02GigsAndAccessControlsAClientCannotCreateGigs"/>
+    <testcase name="Error uses the controlled error structure" time="0.004" classname="02GigsAndAccessControlsAClientCannotCreateGigs"/>
+    <testcase name="Expected HTTP 403" time="0.004" classname="02GigsAndAccessControlsAClientCannotCreateGigs"/>
+    <testcase name="Expected error code" time="0.004" classname="02GigsAndAccessControlsAClientCannotCreateGigs"/>
+  </testsuite>
+  <testsuite name="03 - Booking transactions and income / Client books a gig - save booking and transaction IDs" id="fc11233c-e003-465b-b9e6-16d5fb85cc87" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.020">
+    <testcase name="Response is JSON" time="0.020" classname="03BookingTransactionsAndIncomeClientBooksAGigSaveBookingAndTransactionIDs"/>
+    <testcase name="Security headers are present" time="0.020" classname="03BookingTransactionsAndIncomeClientBooksAGigSaveBookingAndTransactionIDs"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.020" classname="03BookingTransactionsAndIncomeClientBooksAGigSaveBookingAndTransactionIDs"/>
+    <testcase name="Expected HTTP 201" time="0.020" classname="03BookingTransactionsAndIncomeClientBooksAGigSaveBookingAndTransactionIDs"/>
+    <testcase name="Booking and transaction use the server price and correct participants" time="0.020" classname="03BookingTransactionsAndIncomeClientBooksAGigSaveBookingAndTransactionIDs"/>
+  </testsuite>
+  <testsuite name="03 - Booking transactions and income / Owner booking list contains only their own records" id="949322b0-f052-4d60-aa97-9b42cf2d8a28" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.004">
+    <testcase name="Response is JSON" time="0.004" classname="03BookingTransactionsAndIncomeOwnerBookingListContainsOnlyTheirOwnRecords"/>
+    <testcase name="Security headers are present" time="0.004" classname="03BookingTransactionsAndIncomeOwnerBookingListContainsOnlyTheirOwnRecords"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.004" classname="03BookingTransactionsAndIncomeOwnerBookingListContainsOnlyTheirOwnRecords"/>
+    <testcase name="Expected HTTP 200" time="0.004" classname="03BookingTransactionsAndIncomeOwnerBookingListContainsOnlyTheirOwnRecords"/>
+    <testcase name="Correct number of private bookings" time="0.004" classname="03BookingTransactionsAndIncomeOwnerBookingListContainsOnlyTheirOwnRecords"/>
+  </testsuite>
+  <testsuite name="03 - Booking transactions and income / Client transaction list contains only their own records" id="a6a22a36-99d9-4196-a09e-3234550a2d03" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.007">
+    <testcase name="Response is JSON" time="0.007" classname="03BookingTransactionsAndIncomeClientTransactionListContainsOnlyTheirOwnRecords"/>
+    <testcase name="Security headers are present" time="0.007" classname="03BookingTransactionsAndIncomeClientTransactionListContainsOnlyTheirOwnRecords"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.007" classname="03BookingTransactionsAndIncomeClientTransactionListContainsOnlyTheirOwnRecords"/>
+    <testcase name="Expected HTTP 200" time="0.007" classname="03BookingTransactionsAndIncomeClientTransactionListContainsOnlyTheirOwnRecords"/>
+    <testcase name="Correct number of private transactions" time="0.007" classname="03BookingTransactionsAndIncomeClientTransactionListContainsOnlyTheirOwnRecords"/>
+  </testsuite>
+  <testsuite name="03 - Booking transactions and income / Freelancer views income from the confirmed booking" id="05334de5-c3e8-48cf-bff5-16a458ddec31" timestamp="2026-10-12T11:50:12.197Z" tests="5" failures="0" errors="0" time="0.005">
+    <testcase name="Response is JSON" time="0.005" classname="03BookingTransactionsAndIncomeFreelancerViewsIncomeFromTheConfirmedBooking"/>
+    <testcase name="Security headers are present" time="0.005" classname="03BookingTransactionsAndIncomeFreelancerViewsIncomeFromTheConfirmedBooking"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.005" classname="03BookingTransactionsAndIncomeFreelancerViewsIncomeFromTheConfirmedBooking"/>
+    <testcase name="Expected HTTP 200" time="0.005" classname="03BookingTransactionsAndIncomeFreelancerViewsIncomeFromTheConfirmedBooking"/>
+    <testcase name="Income comes from exactly one stored simulated transaction" time="0.005" classname="03BookingTransactionsAndIncomeFreelancerViewsIncomeFromTheConfirmedBooking"/>
+  </testsuite>
+  <testsuite name="04 - Delete your own gig / Owner removes the gig from the marketplace" id="25146051-2dfc-4d0e-bd87-94b84110f2cc" timestamp="2026-10-12T11:50:12.197Z" tests="4" failures="0" errors="0" time="0.020">
+    <testcase name="Response is JSON" time="0.020" classname="04DeleteYourOwnGigOwnerRemovesTheGigFromTheMarketplace"/>
+    <testcase name="Security headers are present" time="0.020" classname="04DeleteYourOwnGigOwnerRemovesTheGigFromTheMarketplace"/>
+    <testcase name="Responses do not expose passwords or internal details" time="0.020" classname="04DeleteYourOwnGigOwnerRemovesTheGigFromTheMarketplace"/>
+    <testcase name="Expected HTTP 200" time="0.020" classname="04DeleteYourOwnGigOwnerRemovesTheGigFromTheMarketplace"/>
+  </testsuite>
+</testsuites>

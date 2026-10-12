@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "mongodb-memory-server": "^10.4.3",
+    "newman": "^6.2.3",
     "selfsigned": "^3.0.1",
     "supertest": "^7.1.4"
   },

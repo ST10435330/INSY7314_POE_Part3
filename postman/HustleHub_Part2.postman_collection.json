@@ -1,0 +1,1043 @@
+{
+  "info": {
+    "name": "HustleHub+ Part 2 - Essential Tests",
+    "description": "A focused collection of 20 requests covering registration/login, duplicate users, incorrect credentials, JWT protection, gig CRUD, ownership, role checks, input validation, client booking, freelancer booking history, simulated transactions and income. Run the entire collection once in order after restarting the local backend to clear rate counters. No environment file or token copying is needed. The first registration generates fresh test emails and clears saved IDs/tokens. It creates three test accounts, one gig, one booking and one simulated transaction. The gig is soft-deleted at the end; accounts and financial history remain. Rate-limiter and additional edge-case evidence is covered by the backend tests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "hhBaseUrl",
+      "value": "https://localhost:3443/api",
+      "type": "string"
+    },
+    {
+      "key": "hhTestPassword",
+      "value": "SecurePass123!",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('Response is JSON', function () {",
+          "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});",
+          "pm.test('Security headers are present', function () {",
+          "  pm.expect(pm.response.headers.get('X-Content-Type-Options')).to.equal('nosniff');",
+          "  pm.expect(pm.response.headers.get('Content-Security-Policy')).to.be.a('string').and.not.empty;",
+          "  pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string').and.not.empty;",
+          "  pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+          "  pm.expect(pm.response.headers.has('X-Powered-By')).to.equal(false);",
+          "});",
+          "pm.test('Responses do not expose passwords or internal details', function () {",
+          "  const text = pm.response.text();",
+          "  pm.expect(text).not.to.include('passwordHash');",
+          "  pm.expect(text).not.to.include(pm.collectionVariables.get('hhTestPassword'));",
+          "  pm.expect(text).not.to.match(/node_modules|JWT_SECRET|\"stack\"\\s*:/);",
+          "});",
+          "if (pm.response.code >= 400) {",
+          "  pm.test('Error uses the controlled error structure', function () {",
+          "    const error = pm.response.json().error;",
+          "    pm.expect(error).to.be.an('object');",
+          "    pm.expect(error.code).to.be.a('string').and.not.empty;",
+          "    pm.expect(error.message).to.be.a('string').and.not.empty;",
+          "    pm.expect(error).not.to.have.property('stack');",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Register and log in - run first",
+      "item": [
+        {
+          "name": "Register Owner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/auth/register",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Expected HTTP status: 201.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Owner\",\n  \"email\": \"{{hhOwnerEmail}}\",\n  \"password\": \"{{hhTestPassword}}\",\n  \"role\": \"freelancer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const runId = pm.variables.replaceIn('{{$guid}}');",
+                  "pm.collectionVariables.set('hhRunId', runId);",
+                  "for (const actor of ['Owner', 'OtherFreelancer', 'Client', 'OtherClient']) {",
+                  "  pm.collectionVariables.set('hh' + actor + 'Email', actor.toLowerCase() + '.' + runId + '@example.com');",
+                  "  pm.collectionVariables.unset('hh' + actor + 'Token');",
+                  "  pm.collectionVariables.unset('hh' + actor + 'Id');",
+                  "}",
+                  "for (const key of ['hhGigId', 'hhBookingId', 'hhTransactionId', 'hhTamperedToken']) {",
+                  "  pm.collectionVariables.unset(key);",
+                  "}",
+                  "pm.collectionVariables.set('hhBookingRequestId', pm.variables.replaceIn('{{$guid}}'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "",
+                  "const user = pm.response.json().user;",
+                  "pm.test('Registration returns a safe user and the selected role', function () {",
+                  "  pm.expect(user.id).to.match(/^[a-f0-9]{24}$/i);",
+                  "  pm.expect(user.role).to.equal('freelancer');",
+                  "  pm.expect(user).not.to.have.property('password');",
+                  "  pm.expect(user).not.to.have.property('passwordHash');",
+                  "});",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('hhOwnerId', user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register OtherFreelancer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/auth/register",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Expected HTTP status: 201.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman OtherFreelancer\",\n  \"email\": \"{{hhOtherFreelancerEmail}}\",\n  \"password\": \"{{hhTestPassword}}\",\n  \"role\": \"freelancer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "",
+                  "const user = pm.response.json().user;",
+                  "pm.test('Registration returns a safe user and the selected role', function () {",
+                  "  pm.expect(user.id).to.match(/^[a-f0-9]{24}$/i);",
+                  "  pm.expect(user.role).to.equal('freelancer');",
+                  "  pm.expect(user).not.to.have.property('password');",
+                  "  pm.expect(user).not.to.have.property('passwordHash');",
+                  "});",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('hhOtherFreelancerId', user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Client",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/auth/register",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Expected HTTP status: 201.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Client\",\n  \"email\": \"{{hhClientEmail}}\",\n  \"password\": \"{{hhTestPassword}}\",\n  \"role\": \"client\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "",
+                  "const user = pm.response.json().user;",
+                  "pm.test('Registration returns a safe user and the selected role', function () {",
+                  "  pm.expect(user.id).to.match(/^[a-f0-9]{24}$/i);",
+                  "  pm.expect(user.role).to.equal('client');",
+                  "  pm.expect(user).not.to.have.property('password');",
+                  "  pm.expect(user).not.to.have.property('passwordHash');",
+                  "});",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('hhClientId', user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Log in Owner - save token automatically",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Expected HTTP status: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{hhOwnerEmail}}\",\n  \"password\": \"{{hhTestPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "",
+                  "const result = pm.response.json();",
+                  "pm.test('Login returns a token and the correct account', function () {",
+                  "  pm.expect(result.accessToken).to.be.a('string').and.not.empty;",
+                  "  pm.expect(result.user.id).to.equal(pm.collectionVariables.get('hhOwnerId'));",
+                  "  pm.expect(result.user.role).to.equal('freelancer');",
+                  "});",
+                  "if (pm.response.code === 200 && result.accessToken) {",
+                  "  pm.collectionVariables.set('hhOwnerToken', result.accessToken);",
+                  "  pm.test('JWT contains user identity, role and expiry', function () {",
+                  "    const parts = result.accessToken.split('.');",
+                  "    pm.expect(parts.length).to.equal(3);",
+                  "    const Buffer = require('buffer').Buffer;",
+                  "    const claims = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));",
+                  "    pm.expect(claims.sub).to.equal(pm.collectionVariables.get('hhOwnerId'));",
+                  "    pm.expect(claims.role).to.equal('freelancer');",
+                  "    pm.expect(claims.exp).to.be.above(claims.iat);",
+                  "    pm.expect(claims.iss).to.be.a('string').and.not.empty;",
+                  "    pm.expect(claims.aud).to.be.a('string').and.not.empty;",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Log in OtherFreelancer - save token automatically",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Expected HTTP status: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{hhOtherFreelancerEmail}}\",\n  \"password\": \"{{hhTestPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "",
+                  "const result = pm.response.json();",
+                  "pm.test('Login returns a token and the correct account', function () {",
+                  "  pm.expect(result.accessToken).to.be.a('string').and.not.empty;",
+                  "  pm.expect(result.user.id).to.equal(pm.collectionVariables.get('hhOtherFreelancerId'));",
+                  "  pm.expect(result.user.role).to.equal('freelancer');",
+                  "});",
+                  "if (pm.response.code === 200 && result.accessToken) {",
+                  "  pm.collectionVariables.set('hhOtherFreelancerToken', result.accessToken);",
+                  "  pm.test('JWT contains user identity, role and expiry', function () {",
+                  "    const parts = result.accessToken.split('.');",
+                  "    pm.expect(parts.length).to.equal(3);",
+                  "    const Buffer = require('buffer').Buffer;",
+                  "    const claims = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));",
+                  "    pm.expect(claims.sub).to.equal(pm.collectionVariables.get('hhOtherFreelancerId'));",
+                  "    pm.expect(claims.role).to.equal('freelancer');",
+                  "    pm.expect(claims.exp).to.be.above(claims.iat);",
+                  "    pm.expect(claims.iss).to.be.a('string').and.not.empty;",
+                  "    pm.expect(claims.aud).to.be.a('string').and.not.empty;",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Log in Client - save token automatically",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Expected HTTP status: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{hhClientEmail}}\",\n  \"password\": \"{{hhTestPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "",
+                  "const result = pm.response.json();",
+                  "pm.test('Login returns a token and the correct account', function () {",
+                  "  pm.expect(result.accessToken).to.be.a('string').and.not.empty;",
+                  "  pm.expect(result.user.id).to.equal(pm.collectionVariables.get('hhClientId'));",
+                  "  pm.expect(result.user.role).to.equal('client');",
+                  "});",
+                  "if (pm.response.code === 200 && result.accessToken) {",
+                  "  pm.collectionVariables.set('hhClientToken', result.accessToken);",
+                  "  pm.test('JWT contains user identity, role and expiry', function () {",
+                  "    const parts = result.accessToken.split('.');",
+                  "    pm.expect(parts.length).to.equal(3);",
+                  "    const Buffer = require('buffer').Buffer;",
+                  "    const claims = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));",
+                  "    pm.expect(claims.sub).to.equal(pm.collectionVariables.get('hhClientId'));",
+                  "    pm.expect(claims.role).to.equal('client');",
+                  "    pm.expect(claims.exp).to.be.above(claims.iat);",
+                  "    pm.expect(claims.iss).to.be.a('string').and.not.empty;",
+                  "    pm.expect(claims.aud).to.be.a('string').and.not.empty;",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Duplicate account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/auth/register",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Expected HTTP status: 409.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Invalid\",\n  \"email\": \"{{hhClientEmail}}\",\n  \"password\": \"{{hhTestPassword}}\",\n  \"role\": \"client\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 409', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Wrong password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Expected HTTP status: 401.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{hhClientEmail}}\",\n  \"password\": \"WrongPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('Expected error code', function () { pm.expect(pm.response.json().error.code).to.equal(\"INVALID_CREDENTIALS\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Profile without authentication",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/users/me",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Expected HTTP status: 401."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Gigs and access controls",
+      "item": [
+        {
+          "name": "Freelancer creates a gig - save gig ID automatically",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/gigs",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hhOwnerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Expected HTTP status: 201.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman logo design\",\n  \"description\": \"Create a simple business logo. <script>alert(1)</script>\",\n  \"price\": 250\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "",
+                  "const gig = pm.response.json().gig;",
+                  "pm.test('Gig uses the authenticated owner and sanitised text', function () {",
+                  "  pm.expect(gig.freelancerId).to.equal(pm.collectionVariables.get('hhOwnerId'));",
+                  "  pm.expect(gig.price).to.equal(250);",
+                  "  pm.expect(gig.description).not.to.match(/<|>|alert\\(1\\)/);",
+                  "});",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('hhGigId', gig.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public gig browsing",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/gigs?page=1&limit=10",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Expected HTTP status: 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "",
+                  "pm.test('Public listing returns an array without account credentials', function () {",
+                  "  pm.expect(pm.response.json().gigs).to.be.an('array');",
+                  "  pm.expect(pm.response.text()).not.to.include('\"email\"');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Owner updates the gig price",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/gigs/{{hhGigId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hhOwnerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Expected HTTP status: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 300.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Updated price is returned', function () { pm.expect(pm.response.json().gig.price).to.equal(300.5); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Another freelancer cannot update this gig",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/gigs/{{hhGigId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hhOtherFreelancerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Expected HTTP status: 404.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject a negative gig price",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/gigs",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hhOwnerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Expected HTTP status: 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman logo design\",\n  \"description\": \"Create a simple business logo. <script>alert(1)</script>\",\n  \"price\": -1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Expected error code', function () { pm.expect(pm.response.json().error.code).to.equal(\"VALIDATION_ERROR\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A client cannot create gigs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/gigs",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hhClientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Expected HTTP status: 403.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman logo design\",\n  \"description\": \"Create a simple business logo. <script>alert(1)</script>\",\n  \"price\": 250\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('Expected error code', function () { pm.expect(pm.response.json().error.code).to.equal(\"FORBIDDEN\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Booking transactions and income",
+      "item": [
+        {
+          "name": "Client books a gig - save booking and transaction IDs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/bookings",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hhClientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Expected HTTP status: 201.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gigId\": \"{{hhGigId}}\",\n  \"requestId\": \"{{hhBookingRequestId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "",
+                  "const result = pm.response.json();",
+                  "pm.test('Booking and transaction use the server price and correct participants', function () {",
+                  "  pm.expect(result.booking.amount).to.equal(300.5);",
+                  "  pm.expect(result.transaction.amount).to.equal(300.5);",
+                  "  pm.expect(result.booking.status).to.equal('confirmed');",
+                  "  pm.expect(result.transaction.status).to.equal('simulated');",
+                  "  pm.expect(result.booking.clientId).to.equal(pm.collectionVariables.get('hhClientId'));",
+                  "  pm.expect(result.booking.freelancerId).to.equal(pm.collectionVariables.get('hhOwnerId'));",
+                  "  pm.expect(result.transaction.bookingId).to.equal(result.booking.id);",
+                  "  pm.expect(result.replay).to.equal(false);",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('hhBookingId', result.booking.id);",
+                  "  pm.collectionVariables.set('hhTransactionId', result.transaction.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Owner booking list contains only their own records",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/bookings",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hhOwnerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Expected HTTP status: 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Correct number of private bookings', function () { pm.expect(pm.response.json().bookings.length).to.equal(1); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Client transaction list contains only their own records",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/transactions?page=1&limit=10",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hhClientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Expected HTTP status: 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Correct number of private transactions', function () { pm.expect(pm.response.json().transactions.length).to.equal(1); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Freelancer views income from the confirmed booking",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/income",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hhOwnerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Expected HTTP 200. Income must be R300.50 from exactly one simulated transaction."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "",
+                  "pm.test('Income comes from exactly one stored simulated transaction', function () {",
+                  "  const income = pm.response.json().income;",
+                  "  pm.expect(income.totalIncome).to.equal(300.5);",
+                  "  pm.expect(income.bookingCount).to.equal(1);",
+                  "  pm.expect(income.currency).to.equal('ZAR');",
+                  "  pm.expect(income.paymentType).to.equal('simulated');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Delete your own gig",
+      "item": [
+        {
+          "name": "Owner removes the gig from the marketplace",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{hhBaseUrl}}/gigs/{{hhGigId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hhOwnerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Expected HTTP status: 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
