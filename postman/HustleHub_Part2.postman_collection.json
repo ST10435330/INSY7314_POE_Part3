@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "HustleHub+ Part 2 - Essential Tests",
+    "name": "HustleHub+ Part 2",
     "description": "A focused collection of 20 requests covering registration/login, duplicate users, incorrect credentials, JWT protection, gig CRUD, ownership, role checks, input validation, client booking, freelancer booking history, simulated transactions and income. Run the entire collection once in order after restarting the local backend to clear rate counters. No environment file or token copying is needed. The first registration generates fresh test emails and clears saved IDs/tokens. It creates three test accounts, one gig, one booking and one simulated transaction. The gig is soft-deleted at the end; accounts and financial history remain. Rate-limiter and additional edge-case evidence is covered by the backend tests.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
