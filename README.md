@@ -458,11 +458,6 @@ zero failures**:
 8. Use Postman to show a rejected role or ownership request.
 
 
-The Part 2 video should show the complete application flow: authentication,
-gig creation, client booking, booking history, transaction recording and
-freelancer income. Include a brief view of a security rejection and test results.
-Add the recorded video link to the project information table above.
-
 
 
 
