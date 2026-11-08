@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import IncomeSummary from './IncomeSummary.jsx';
 
 export default function AccountActivity({ user, request, version = 0 }) {
   const [page, setPage] = useState(1);
@@ -8,6 +9,7 @@ export default function AccountActivity({ user, request, version = 0 }) {
     bookings: [],
     transactions: [],
     income: null,
+    taxEstimate: null,
     error: ''
   });
 
@@ -32,6 +34,7 @@ export default function AccountActivity({ user, request, version = 0 }) {
             bookings: bookings.bookings,
             transactions: transactions.transactions,
             income: income?.income || null,
+            taxEstimate: income?.taxEstimate || null,
             error: ''
           });
         }
@@ -43,6 +46,7 @@ export default function AccountActivity({ user, request, version = 0 }) {
             bookings: [],
             transactions: [],
             income: null,
+            taxEstimate: null,
             error: error.message
           });
         }
@@ -70,13 +74,7 @@ export default function AccountActivity({ user, request, version = 0 }) {
       {!loading && !error && (
         <>
           {result.income && (
-            <div>
-              <h3>Simulated income</h3>
-              <p>
-                Total: R{Number(result.income.totalIncome).toFixed(2)}
-              </p>
-              <p>Bookings: {result.income.bookingCount}</p>
-            </div>
+            <IncomeSummary income={result.income} taxEstimate={result.taxEstimate} />
           )}
 
           <h3>Your bookings</h3>

@@ -1,0 +1,40 @@
+.income-summary {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: .85rem;
+  padding: 1rem;
+  color: #172554;
+  margin-top: 1rem;
+}
+
+.income-summary__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: .75rem;
+  margin: 1rem 0;
+}
+
+.income-summary__cards > div {
+  background: #fff;
+  border: 1px solid #dbeafe;
+  border-radius: .65rem;
+  padding: .85rem;
+}
+
+.income-summary__cards dt {
+  color: #334155;
+  font-size: .9rem;
+}
+
+.income-summary__cards dd {
+  margin: .25rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.income-summary__note {
+  margin-bottom: 0;
+  font-size: .9rem;
+}

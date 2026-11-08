@@ -155,7 +155,7 @@ test('clients see bookings and transactions without requesting income', async ()
 
   expect(screen.getByText('Logo design')).toBeInTheDocument();
   expect(request).not.toHaveBeenCalledWith('/income');
-  expect(screen.queryByText('Simulated income')).not.toBeInTheDocument();
+  expect(screen.queryByText('Freelancer income and tax')).not.toBeInTheDocument();
 });
 
 test('freelancer income can be refreshed', async () => {
@@ -176,14 +176,14 @@ test('freelancer income can be refreshed', async () => {
     <AccountActivity user={{ role: 'freelancer' }} request={request} />
   );
 
-  await screen.findByText('Total: R500.00');
+  await screen.findByText(/R\s*500,00/);
 
   total = 900;
   await actions.click(
     screen.getByRole('button', { name: 'Refresh activity' })
   );
 
-  await screen.findByText('Total: R900.00');
+  await screen.findByText(/R\s*900,00/);
 });
 
 test('activity errors are displayed and can be retried', async () => {
