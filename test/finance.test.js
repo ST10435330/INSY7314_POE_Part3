@@ -187,6 +187,13 @@ test('income totals include only the authenticated freelancer transactions', asy
     paymentType: 'simulated'
   });
 
+  assert.deepEqual(response.body.taxEstimate, {
+    model: 'illustrative-flat-rate',
+    ratePercent: 20,
+    estimatedTax: 180.2,
+    afterEstimatedTax: 720.8
+  });
+
   const other = await get('/api/income', otherOwner);
 
   assert.equal(other.body.income.totalIncome, 900);
@@ -198,6 +205,8 @@ test('a freelancer without bookings receives a zero income summary', async () =>
 
   assert.equal(response.status, 200);
   assert.equal(response.body.income.totalIncome, 0);
+  assert.equal(response.body.taxEstimate.estimatedTax, 0);
+  assert.equal(response.body.taxEstimate.afterEstimatedTax, 0);
   assert.equal(response.body.income.bookingCount, 0);
 });
 

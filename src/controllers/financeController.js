@@ -1,6 +1,7 @@
 const Transaction = require('../models/Transaction');
 const { ownFilter, transactionView } = require('./bookingController');
 const ApiError = require('../utils/ApiError');
+const { estimateTax } = require('../services/taxEstimate');
 
 exports.list = async (req, res) => {
   const page = Number(req.query.page) || 1;
@@ -55,12 +56,15 @@ exports.income = async (req, res) => {
     }
   ]);
 
+  const totalCents = summary?.totalCents || 0;
+
   return res.json({
     income: {
-      totalIncome: (summary?.totalCents || 0) / 100,
+      totalIncome: totalCents / 100,
       currency: 'ZAR',
       bookingCount: summary?.bookingCount || 0,
       paymentType: 'simulated'
-    }
+    },
+    taxEstimate: estimateTax(totalCents)
   });
 };
