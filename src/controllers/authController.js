@@ -1,6 +1,8 @@
+const { randomUUID } = require('node:crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const RevokedToken = require('../models/RevokedToken');
 const config = require('../config');
 const publicUser = require('../utils/publicUser');
 
@@ -64,6 +66,7 @@ exports.login = async (req, res, next) => {
       config.jwtSecret(),
       {
         algorithm: 'HS256',
+        jwtid: randomUUID(),
         expiresIn: config.jwtExpiresIn,
         issuer: config.jwtIssuer,
         audience: config.jwtAudience
@@ -80,4 +83,14 @@ exports.login = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+};
+
+exports.logout = async (req, res) => {
+  await RevokedToken.updateOne(
+    { _id: req.auth.tokenDigest },
+    { $setOnInsert: { expiresAt: new Date(req.auth.exp * 1000) } },
+    { upsert: true }
+  );
+
+  return res.status(204).end();
 };

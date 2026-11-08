@@ -210,3 +210,18 @@ test('rejects a token after its user is deleted', async () => {
   assert.equal(response.status, 401);
   assert.equal(response.body.error.code, 'INVALID_TOKEN');
 });
+
+test('logout revokes the presented token while a second login remains active', async () => {
+  const credentials = { email: validUser.email, password: validUser.password };
+  const first = await request(app).post('/api/auth/login').send(credentials);
+  const second = await request(app).post('/api/auth/login').send(credentials);
+  assert.equal(first.status, 200);
+  assert.equal(second.status, 200);
+  assert.notEqual(first.body.accessToken, second.body.accessToken);
+
+  const firstHeader = 'Bearer ' + first.body.accessToken;
+  const secondHeader = 'Bearer ' + second.body.accessToken;
+  assert.equal((await request(app).post('/api/auth/logout').set('Authorization', firstHeader)).status, 204);
+  assert.equal((await request(app).get('/api/users/me').set('Authorization', firstHeader)).status, 401);
+  assert.equal((await request(app).get('/api/users/me').set('Authorization', secondHeader)).status, 200);
+});

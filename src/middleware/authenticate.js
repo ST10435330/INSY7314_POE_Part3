@@ -1,6 +1,8 @@
+const { createHash } = require('node:crypto');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const User = require('../models/User');
+const RevokedToken = require('../models/RevokedToken');
 
 async function authenticate(req, res, next) {
   const authorization = req.get('authorization');
@@ -25,6 +27,7 @@ async function authenticate(req, res, next) {
     });
 
     if (
+      !Number.isInteger(claims.exp) ||
       typeof claims.sub !== 'string' ||
       !/^[a-f0-9]{24}$/i.test(claims.sub)
     ) {
@@ -40,9 +43,13 @@ async function authenticate(req, res, next) {
   }
 
   try {
-    const user = await User.findById(claims.sub);
+    const tokenDigest = createHash('sha256').update(match[1]).digest('hex');
+    const [user, revoked] = await Promise.all([
+      User.findById(claims.sub),
+      RevokedToken.exists({ _id: tokenDigest })
+    ]);
 
-    if (!user) {
+    if (!user || revoked) {
       return res.status(401).json({
         error: {
           code: 'INVALID_TOKEN',
@@ -52,7 +59,7 @@ async function authenticate(req, res, next) {
     }
 
     req.user = user;
-    req.auth = { ...claims, role: user.role };
+    req.auth = { ...claims, role: user.role, tokenDigest };
 
     return next();
   } catch (error) {

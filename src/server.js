@@ -9,6 +9,7 @@ const Gig = require('./models/Gig');
 
 const Booking = require('./models/Booking');
 const Transaction = require('./models/Transaction');
+const RevokedToken = require('./models/RevokedToken');
 
 async function startServer() {
   config.jwtSecret();
@@ -24,7 +25,8 @@ async function startServer() {
   await Gig.init();
   await Promise.all([
   Booking.init(),
-  Transaction.init()
+  Transaction.init(),
+  RevokedToken.init()
 ]);
 
   const server = https.createServer(credentials, app);

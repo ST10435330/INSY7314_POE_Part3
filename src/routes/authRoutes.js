@@ -2,6 +2,7 @@ const express = require('express');
 const { body, checkExact } = require('express-validator');
 const rateLimit = require('express-rate-limit');
 const validate = require('../middleware/validate');
+const authenticate = require('../middleware/authenticate');
 const controller = require('../controllers/authController');
 
 const router = express.Router();
@@ -85,5 +86,7 @@ router.post('/login', authLimiter,
   validate,
   controller.login
 );
+
+router.post('/logout', authenticate, controller.logout);
 
 module.exports = router;
