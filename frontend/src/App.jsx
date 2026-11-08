@@ -9,6 +9,16 @@ import AccountActivity from './components/AccountActivity.jsx';
 function AccountPanel({ user, request, onLogout }) {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+
+  async function signOut() {
+    setSigningOut(true);
+    try {
+      await onLogout();
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   async function verifyAccount() {
     setBusy(true);
@@ -36,8 +46,8 @@ function AccountPanel({ user, request, onLogout }) {
         {busy ? 'Checking...' : 'Verify account access'}
       </button>
 
-      <button type="button" onClick={onLogout}>
-        Log out
+      <button type="button" onClick={signOut} disabled={signingOut}>
+        {signingOut ? 'Logging out...' : 'Log out'}
       </button>
 
       <p role="status">{message}</p>

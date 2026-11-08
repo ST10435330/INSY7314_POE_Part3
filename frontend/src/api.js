@@ -25,6 +25,8 @@ export async function apiRequest(path, {
     throw new Error('Unable to connect. Please try again.');
   }
 
+  if (response.status === 204) return;
+
   let data;
 
   try {

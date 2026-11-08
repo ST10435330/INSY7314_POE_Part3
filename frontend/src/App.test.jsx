@@ -176,17 +176,37 @@ test('login supplies the token to protected requests and logout clears the accou
   expect(localStorage.length).toBe(0);
   expect(sessionStorage.length).toBe(0);
 
+  apiRequest.mockResolvedValueOnce(undefined);
+
   await actions.click(
     screen.getByRole('button', { name: 'Log out' })
   );
 
-  expect(
-    screen.getByRole('heading', { name: 'Log in' })
-  ).toBeInTheDocument();
+  expect(apiRequest).toHaveBeenLastCalledWith('/auth/logout', {
+    method: 'POST',
+    token: 'test-access-token'
+  });
+  await screen.findByRole('heading', { name: 'Log in' });
+  expect(screen.queryByText('Name: Demo Client')).not.toBeInTheDocument();
+});
 
-  expect(
-    screen.queryByText('Name: Demo Client')
-  ).not.toBeInTheDocument();
+test('a failed logout keeps the session available for a retry', async () => {
+  const actions = userEvent.setup();
+  apiRequest
+    .mockResolvedValueOnce(loginResult)
+    .mockRejectedValueOnce(new Error('Unable to connect.'))
+    .mockResolvedValueOnce(undefined);
+
+  render(<App />);
+  await fillLogin(actions);
+  await screen.findByText('Name: Demo Client');
+  await actions.click(screen.getByRole('button', { name: 'Log out' }));
+
+  await screen.findByText('Could not end the session. Try logging out again.');
+  expect(screen.getByText('Name: Demo Client')).toBeInTheDocument();
+
+  await actions.click(screen.getByRole('button', { name: 'Log out' }));
+  await screen.findByRole('heading', { name: 'Log in' });
 });
 
 test('an expired token clears the session and returns to login', async () => {
@@ -252,6 +272,8 @@ test('gig management is shown only for freelancer sessions', async () => {
   render(<App />);
   await fillLogin(actions);
   await screen.findByText('Freelancer management');
+
+  apiRequest.mockResolvedValueOnce(undefined);
 
   await actions.click(
     screen.getByRole('button', { name: 'Log out' })

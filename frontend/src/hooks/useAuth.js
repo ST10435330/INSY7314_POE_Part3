@@ -17,10 +17,26 @@ export function useAuth() {
     setNotice('Logged in successfully.');
   }, []);
 
-  const logout = useCallback(() => {
-    currentSession.current = null;
-    setSession(null);
-    setNotice('You have logged out.');
+  const logout = useCallback(async () => {
+    const current = currentSession.current;
+    if (!current) return;
+
+    try {
+      await apiRequest('/auth/logout', { method: 'POST', token: current.accessToken });
+    } catch (error) {
+      if (error.status !== 401) {
+        if (currentSession.current === current) {
+          setNotice('Could not end the session. Try logging out again.');
+        }
+        return;
+      }
+    }
+
+    if (currentSession.current === current || currentSession.current === null) {
+      currentSession.current = null;
+      setSession(null);
+      setNotice('You have logged out.');
+    }
   }, []);
 
   const request = useCallback(async (path, options = {}) => {
