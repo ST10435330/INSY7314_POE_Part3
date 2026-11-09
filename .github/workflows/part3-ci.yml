@@ -1,0 +1,86 @@
+name: Part 3 DevSecOps
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      MONGOMS_DISABLE_POSTINSTALL: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - name: Install locked dependencies
+        id: dependencies
+        run: |
+          npm ci
+          npm ci --prefix frontend
+      - name: Run static analysis
+        run: |
+          mkdir -p reports
+          npm run --silent lint:ci | tee reports/static-analysis.json
+        shell: bash
+      - name: Run backend tests
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: npm test
+      - name: Run frontend tests
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: npm test --prefix frontend
+      - name: Build API and frontend
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: |
+          npm run build
+          npm run build --prefix frontend
+      - name: Upload static analysis report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: static-analysis
+          path: reports/static-analysis.json
+
+  container-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    needs: quality
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+      - name: Build images and wait for stack readiness
+        run: |
+          printf 'JWT_SECRET=%s\n' "$(openssl rand -hex 32)" > .env.compose
+          docker compose --env-file .env.compose up --build -d --wait --wait-timeout 120
+      - name: Verify the full flow through the frontend gateway
+        run: |
+          mkdir -p reports
+          node scripts/part3-smoke.mjs http://127.0.0.1:8080 | tee reports/compose-smoke.txt
+        shell: bash
+      - name: Capture status and audit logs
+        if: ${{ always() }}
+        run: |
+          mkdir -p reports
+          if [ -f .env.compose ]; then
+            docker compose --env-file .env.compose ps -a > reports/compose-status.txt || true
+            docker compose --env-file .env.compose logs --no-color --no-log-prefix api > reports/compose-api.log 2>&1 || true
+            docker compose --env-file .env.compose down -v
+          fi
+      - name: Upload container evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: container-evidence
+          path: reports/compose-*

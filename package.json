@@ -12,7 +12,8 @@
     "check": "npm test",
     "db": "node scripts/local-db.js",
     "build": "esbuild src/server.js --bundle --platform=node --format=cjs --target=node24 --packages=external --outfile=dist/server.js",
-    "start:build": "node dist/server.js"
+    "start:build": "node dist/server.js",
+    "lint:ci": "node frontend/node_modules/oxlint/bin/oxlint --threads=2 --format=json --react-plugin --deny-warnings -D no-eval -D no-implied-eval -D no-new-func -D react/no-danger src scripts test frontend/src frontend/vite.config.js frontend/vitest.config.js"
   },
   "engines": {
     "node": ">=20"
