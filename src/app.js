@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const { randomUUID } = require('node:crypto');
 const config = require('./config');
+const database = require('./database');
 const audit = require('./utils/audit');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -52,6 +53,12 @@ app.use(cors({
 app.use(express.json({ limit: '20kb', strict: true }));
 
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
+app.get('/api/ready', async (_req, res) => {
+  const ready = await database.isReady();
+  res.status(ready ? 200 : 503).json({
+    status: ready ? 'ready' : 'unavailable'
+  });
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/gigs', gigRoutes);

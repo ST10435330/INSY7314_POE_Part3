@@ -53,6 +53,12 @@ test('GET /api/health reports that the API is available', async () => {
   assert.ok(response.headers['x-request-id']);
 });
 
+test('GET /api/ready checks for a writable database', async () => {
+  const response = await request(app).get('/api/ready');
+  assert.equal(response.status, 200);
+  assert.deepEqual(response.body, { status: 'ready' });
+});
+
 test('registers a valid user without exposing a password', async () => {
   const response = await request(app).post('/api/auth/register').send(validUser);
   assert.equal(response.status, 201);

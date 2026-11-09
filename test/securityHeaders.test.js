@@ -11,6 +11,11 @@ const scenarios = [
   },
   {
     method: 'get',
+    path: '/api/ready',
+    status: 503
+  },
+  {
+    method: 'get',
     path: '/api/users/me',
     status: 401
   },
@@ -50,7 +55,9 @@ for (const scenario of scenarios) {
       assert.ok(response.headers['x-request-id']);
       assert.equal(response.headers['x-powered-by'], undefined);
 
-      if (scenario.status !== 200) {
+      if (scenario.status === 503) {
+        assert.deepEqual(response.body, { status: 'unavailable' });
+      } else if (scenario.status !== 200) {
         assert.equal(typeof response.body.error.code, 'string');
         assert.equal(typeof response.body.error.message, 'string');
         assert.equal(response.body.error.stack, undefined);

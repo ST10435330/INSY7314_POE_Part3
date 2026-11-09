@@ -31,8 +31,20 @@ async function connect(uri) {
   console.log('Connected to MongoDB.');
 }
 
+async function isReady() {
+  if (mongoose.connection.readyState !== 1) return false;
+
+  try {
+    const status = await mongoose.connection.db.admin()
+      .command({ hello: 1 }, { timeoutMS: 2000 });
+    return status.isWritablePrimary === true || status.msg === 'isdbgrid';
+  } catch {
+    return false;
+  }
+}
+
 async function disconnect() {
   await mongoose.disconnect();
 }
 
-module.exports = { connect, disconnect };
+module.exports = { connect, disconnect, isReady };
