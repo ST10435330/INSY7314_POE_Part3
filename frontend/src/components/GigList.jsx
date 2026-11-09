@@ -44,15 +44,16 @@ export default function GigList({
 
   return (
     <section>
-      <h2>Available gigs</h2>
-
-      <button
-        type="button"
-        disabled={loading}
-        onClick={() => setRefresh(value => value + 1)}
-      >
-        Refresh gigs
-      </button>
+      <div className="section-heading">
+        <h2>Available gigs</h2>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => setRefresh(value => value + 1)}
+        >
+          Refresh gigs
+        </button>
+      </div>
 
       {loading && <p role="status">Loading gigs...</p>}
       {error && <p role="alert" className="error">{error}</p>}
@@ -61,41 +62,44 @@ export default function GigList({
         <p>No gigs on this page.</p>
       )}
 
-      {!loading && gigs.map(gig => (
-        <article className="gig" key={gig.id}>
-          <h3>{gig.title}</h3>
-          <p>{gig.description}</p>
-          <p>Freelancer: {gig.freelancerName || 'Freelancer'}</p>
-          <p>Price: R{Number(gig.price).toFixed(2)}</p>
+      <div className="marketplace-grid">
+        {!loading && gigs.map(gig => (
+          <article className="gig" key={gig.id}>
+            <h3>{gig.title}</h3>
+            <p>{gig.description}</p>
+            <p>Freelancer: {gig.freelancerName || 'Freelancer'}</p>
+            <p>Price: R{Number(gig.price).toFixed(2)}</p>
 
-          {user?.role === 'client' && (
-            <BookGig
-              gig={gig}
-              request={request}
-              attempts={attempts}
-              onBooked={onBooked}
-            />
-          )}
-        </article>
-      ))}
+            {user?.role === 'client' && (
+              <BookGig
+                gig={gig}
+                request={request}
+                attempts={attempts}
+                onBooked={onBooked}
+              />
+            )}
+          </article>
+        ))}
+      </div>
 
-      <p>Page {page}</p>
+      <footer className="pagination">
+        <p>Page {page}</p>
+        <button
+          type="button"
+          disabled={loading || page === 1}
+          onClick={() => setPage(value => value - 1)}
+        >
+          Previous page
+        </button>
 
-      <button
-        type="button"
-        disabled={loading || page === 1}
-        onClick={() => setPage(value => value - 1)}
-      >
-        Previous page
-      </button>
-
-      <button
-        type="button"
-        disabled={loading || !!error || gigs.length < 10}
-        onClick={() => setPage(value => value + 1)}
-      >
-        Next page
-      </button>
+        <button
+          type="button"
+          disabled={loading || !!error || gigs.length < 10}
+          onClick={() => setPage(value => value + 1)}
+        >
+          Next page
+        </button>
+      </footer>
     </section>
   );
 }

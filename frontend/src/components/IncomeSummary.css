@@ -1,9 +1,9 @@
 .income-summary {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: #edf6f2;
+  border: 1px solid #c9e1d7;
   border-radius: .85rem;
   padding: 1rem;
-  color: #172554;
+  color: #17382e;
   margin-top: 1rem;
 }
 
@@ -16,13 +16,13 @@
 
 .income-summary__cards > div {
   background: #fff;
-  border: 1px solid #dbeafe;
+  border: 1px solid #d6e8e0;
   border-radius: .65rem;
   padding: .85rem;
 }
 
 .income-summary__cards dt {
-  color: #334155;
+  color: #405b52;
   font-size: .9rem;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .income-summary__tax { fill: #b45309; }
-.income-summary__net { fill: #1d4ed8; }
+.income-summary__net { fill: #16705b; }
 
 .income-summary__legend {
   display: flex;

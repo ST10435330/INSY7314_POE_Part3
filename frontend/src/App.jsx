@@ -80,49 +80,60 @@ function App() {
   }
 
   return (
-    <main>
-      <h1>HustleHub+</h1>
-      <p>A freelance marketplace for clients and freelancers.</p>
+    <main className="app-shell">
+      <header className="app-header">
+        <span className="brand-mark" aria-hidden="true">H+</span>
+        <div>
+          <h1>HustleHub+</h1>
+          <p>A freelance marketplace for clients and freelancers.</p>
+        </div>
+      </header>
 
-      {auth.notice && <p role="status">{auth.notice}</p>}
+      {auth.notice && <p className="app-notice" role="status">{auth.notice}</p>}
 
-      {auth.session ? (
-        <AccountPanel
-          key={'account:' + auth.session.accessToken}
-          user={auth.session.user}
-          request={auth.request}
-          onLogout={auth.logout}
-        />
-      ) : (
-        <AuthForm onLogin={auth.login} />
-      )}
+      <div className="app-workspace">
+        <div className="app-sidebar">
+          {auth.session ? (
+            <AccountPanel
+              key={'account:' + auth.session.accessToken}
+              user={auth.session.user}
+              request={auth.request}
+              onLogout={auth.logout}
+            />
+          ) : (
+            <AuthForm onLogin={auth.login} />
+          )}
+        </div>
 
-      {auth.session?.user.role === 'freelancer' && (
-        <FreelancerGigs
-          key={'gigs:' + auth.session.accessToken}
-          request={auth.request}
-          onChange={() => setGigVersion(value => value + 1)}
-        />
-      )}
+        <div className="app-content">
+          <GigList
+            key={'market:' + (auth.session?.accessToken || 'guest')}
+            version={gigVersion}
+            user={auth.session?.user}
+            request={auth.request}
+            onBooked={() => setActivityVersion(value => value + 1)}
+          />
 
-      <GigList
-  key={'market:' + (auth.session?.accessToken || 'guest')}
-  version={gigVersion}
-  user={auth.session?.user}
-  request={auth.request}
-  onBooked={() => setActivityVersion(value => value + 1)}
-/>
+          {auth.session && (
+            <AccountActivity
+              key={'activity:' + auth.session.accessToken}
+              user={auth.session.user}
+              request={auth.request}
+              version={activityVersion}
+            />
+          )}
 
-{auth.session && (
-  <AccountActivity
-    key={'activity:' + auth.session.accessToken}
-    user={auth.session.user}
-    request={auth.request}
-    version={activityVersion}
-  />
-)}
+          {auth.session?.user.role === 'freelancer' && (
+            <FreelancerGigs
+              key={'gigs:' + auth.session.accessToken}
+              request={auth.request}
+              onChange={() => setGigVersion(value => value + 1)}
+            />
+          )}
+        </div>
+      </div>
 
-      <section>
+      <section className="connection-panel">
         <h2>API connection</h2>
 
         <button
