@@ -15,6 +15,8 @@ test('freelancers see the server-calculated tax beside their simulated income', 
   render(<AccountActivity user={{ role: 'freelancer' }} request={request} />);
   await screen.findByRole('heading', { name: 'Freelancer income and tax' });
   expect(screen.getByText('Estimated tax (20%)')).toBeInTheDocument();
+  expect(screen.getByText('Estimated tax: 20%')).toBeInTheDocument();
+  expect(screen.getByText('After estimated tax: 80%')).toBeInTheDocument();
   const amounts = screen.getAllByRole('definition').map(term => term.textContent);
   expect(amounts.map(amount => amount.replace(/\s/g, ''))).toEqual(['R1000,00', 'R200,00', 'R800,00']);
 });

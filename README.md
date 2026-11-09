@@ -19,8 +19,9 @@ view their recorded income, estimated tax and income after the estimate.
 | Nginx | Serves the built frontend and proxies `/api/` to Express in Docker Compose |
 
 The API takes the price from the gig and saves the booking and its transaction
-in one database transaction. Retrying with the same booking request ID
-returns the original result. Later gig price changes leave recorded amounts intact.
+in one database transaction. A retry by the same client for the same gig with
+the same request ID returns the original result. Reusing that ID for another
+gig returns `409`. Later gig price changes leave recorded amounts intact.
 
 ## Run with Docker Compose
 
@@ -76,7 +77,9 @@ first run.
 recorded simulated earnings in integer cents, applies an illustrative flat
 rate of 20%, rounds to the nearest cent and subtracts the estimate from gross
 income. For example, R1,250 gross yields R250 estimated tax and R1,000 after
-the estimate. The dashboard labels this as a lifetime platform simulation.
+the estimate. A stacked bar shows how gross income is split between the
+estimate and the amount remaining. The dashboard labels this as a lifetime
+platform simulation.
 
 ## Security review
 
@@ -118,6 +121,11 @@ dependencies, runs Oxlint and both test suites, then builds the API and
 frontend. Its second job starts the Compose stack and exercises the app
 through Nginx. Both jobs passed on the linked workflow run. The run provides
 the `static-analysis` and `container-evidence` artifacts.
+
+The committed Oxlint report contains zero diagnostics across 59 files.
+The configured rules reject dynamic code execution and React raw HTML
+rendering. A temporary `eval()` probe failed the lint command and was removed
+after the check. The report reflects the configured source rules.
 
 ## Evidence and demonstration
 
