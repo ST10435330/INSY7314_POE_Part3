@@ -249,3 +249,24 @@ test('gig price changes and removal do not alter recorded income', async () => {
 
   assert.equal(transaction.body.transaction.amount, 450.5);
 });
+
+test('income requests are limited per freelancer account', async () => {
+  const limitedOwner = await User.create({
+    name: 'Rate Limit Freelancer',
+    email: 'limit@finance.test',
+    role: 'freelancer',
+    passwordHash: owner.passwordHash
+  });
+
+  for (let count = 0; count < 30; count++) {
+    assert.equal((await get('/api/income', limitedOwner)).status, 200);
+  }
+
+  const blocked = await get('/api/income', limitedOwner);
+  assert.equal(blocked.status, 429);
+  assert.equal(blocked.body.error.code, 'RATE_LIMITED');
+  assert.ok(Number(blocked.headers['retry-after']) > 0);
+
+  assert.equal((await get('/api/income', otherOwner)).status, 200);
+  assert.equal((await get('/api/transactions', limitedOwner)).status, 200);
+});
