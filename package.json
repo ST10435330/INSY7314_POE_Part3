@@ -10,7 +10,9 @@
     "setup:cert": "node scripts/generate-cert.js",
     "test": "node --test",
     "check": "npm test",
-    "db": "node scripts/local-db.js"
+    "db": "node scripts/local-db.js",
+    "build": "esbuild src/server.js --bundle --platform=node --format=cjs --target=node24 --packages=external --outfile=dist/server.js",
+    "start:build": "node dist/server.js"
   },
   "engines": {
     "node": ">=20"
@@ -28,6 +30,7 @@
     "sanitize-html": "^2.18.0"
   },
   "devDependencies": {
+    "esbuild": "0.28.2",
     "mongodb-memory-server": "^10.4.3",
     "newman": "^6.2.3",
     "selfsigned": "^3.0.1",
