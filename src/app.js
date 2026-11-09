@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const { randomUUID } = require('node:crypto');
 const config = require('./config');
+const audit = require('./utils/audit');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
@@ -16,6 +17,25 @@ app.disable('x-powered-by');
 app.use((req, res, next) => {
   req.requestId = randomUUID();
   res.setHeader('X-Request-ID', req.requestId);
+  next();
+});
+app.use('/api', (req, res, next) => {
+  const login = req.method === 'POST' && /^\/auth\/login\/?$/i.test(req.path);
+
+  res.once('finish', () => {
+    const status = res.statusCode;
+    if (status < 400) return;
+
+    const level = status >= 500 ? 'error' : 'warn';
+    const event = { requestId: req.requestId, method: req.method, status };
+    audit('api.error', event, level);
+
+    if (login) {
+      const outcome = { 400: 'invalid', 401: 'denied', 429: 'throttled' }[status] || 'error';
+      audit('auth.login', { ...event, outcome }, level);
+    }
+  });
+
   next();
 });
 app.use(helmet());

@@ -41,10 +41,6 @@ function errorHandler(error, req, res, next) {
     message = 'The request contains invalid input.';
   }
 
-  if (status === 500) {
-    console.error('[' + req.requestId + '] Internal request failure.');
-  }
-
   return res.status(status).json({
     error: { code, message, requestId: req.requestId }
   });

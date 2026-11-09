@@ -1,6 +1,7 @@
 const Booking = require('../models/Booking');
 const service = require('../services/bookingService');
 const ApiError = require('../utils/ApiError');
+const audit = require('../utils/audit');
 
 const bookingView = booking => ({
   id: String(booking._id),
@@ -38,6 +39,20 @@ exports.create = async (req, res) => {
     req.user._id,
     req.body
   );
+
+  const event = {
+    requestId: req.requestId,
+    accountId: String(req.user._id),
+    bookingId: String(booking._id),
+    transactionId: String(transaction._id)
+  };
+
+  if (replay) {
+    audit('booking.replayed', event);
+  } else {
+    audit('booking.created', event);
+    audit('transaction.recorded', { ...event, status: transaction.status });
+  }
 
   return res.status(replay ? 200 : 201).json({
     message: replay

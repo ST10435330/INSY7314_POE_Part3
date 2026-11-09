@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const RevokedToken = require('../models/RevokedToken');
+const audit = require('../utils/audit');
 const config = require('../config');
 const publicUser = require('../utils/publicUser');
 
@@ -73,6 +74,13 @@ exports.login = async (req, res, next) => {
       }
     );
 
+    audit('auth.login', {
+      requestId: req.requestId,
+      status: 200,
+      outcome: 'success',
+      accountId: String(user._id)
+    });
+
     return res.json({
       message: 'Login successful.',
       accessToken,
@@ -92,5 +100,9 @@ exports.logout = async (req, res) => {
     { upsert: true }
   );
 
+  audit('auth.logout', {
+    requestId: req.requestId,
+    accountId: String(req.user._id)
+  });
   return res.status(204).end();
 };
