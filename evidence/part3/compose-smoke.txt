@@ -1,0 +1,5 @@
+PASS Frontend, API and MongoDB are reachable
+PASS Freelancer and client authenticate; wrong password is rejected
+PASS Gig created, booking confirmed and exactly one simulated transaction recorded
+PASS R1,000 gross, R200 estimated tax, R800 after estimate; client receives 403 and income burst receives 429
+PASS Logout invalidates the previous bearer token

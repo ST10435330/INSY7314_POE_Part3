@@ -1,0 +1,5 @@
+NAME                           IMAGE                      COMMAND                  SERVICE      CREATED       STATUS                     PORTS
+hustlehub_part3-api-1          hustlehub_part3-api        "docker-entrypoint.s???"   api          2 hours ago   Up 7 minutes (healthy)     3000/tcp
+hustlehub_part3-frontend-1     hustlehub_part3-frontend   "/docker-entrypoint.???"   frontend     2 hours ago   Up 7 minutes (healthy)     127.0.0.1:8080->8080/tcp
+hustlehub_part3-mongo-1        mongo:7.0.24               "docker-entrypoint.s???"   mongo        2 hours ago   Up 7 minutes (healthy)     27017/tcp
+hustlehub_part3-mongo-init-1   mongo:7.0.24               "mongosh mongodb://m???"   mongo-init   2 hours ago   Exited (0) 5 seconds ago   

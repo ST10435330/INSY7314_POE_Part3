@@ -1,0 +1,11 @@
+{"timestamp":"2026-11-09T12:21:04.584Z","level":"warn","event":"api.error","requestId":"e795848f-5846-4c1b-8cd1-193bf7ab4414","method":"POST","status":401}
+{"timestamp":"2026-11-09T12:21:04.585Z","level":"warn","event":"auth.login","requestId":"e795848f-5846-4c1b-8cd1-193bf7ab4414","method":"POST","status":401,"outcome":"denied"}
+{"timestamp":"2026-11-09T12:21:04.915Z","level":"info","event":"auth.login","requestId":"89f2bc97-e9ef-4107-a68b-45504e291ff6","status":200,"outcome":"success","accountId":"6af1baaf9fd34713f47e8db2"}
+{"timestamp":"2026-11-09T12:21:05.246Z","level":"info","event":"auth.login","requestId":"644a8a1e-4cc8-4d97-bd19-ed87699f7ddf","status":200,"outcome":"success","accountId":"6af1bab09fd34713f47e8db4"}
+{"timestamp":"2026-11-09T12:21:05.312Z","level":"info","event":"booking.created","requestId":"4d57da1b-bbbe-4f4a-ab60-8f36053a94ed","accountId":"6af1bab09fd34713f47e8db4","bookingId":"6af1bab19fd34713f47e8dc1","transactionId":"6af1bab19fd34713f47e8dc3"}
+{"timestamp":"2026-11-09T12:21:05.312Z","level":"info","event":"transaction.recorded","requestId":"4d57da1b-bbbe-4f4a-ab60-8f36053a94ed","accountId":"6af1bab09fd34713f47e8db4","bookingId":"6af1bab19fd34713f47e8dc1","transactionId":"6af1bab19fd34713f47e8dc3","status":"simulated"}
+{"timestamp":"2026-11-09T12:21:05.335Z","level":"info","event":"booking.replayed","requestId":"f885eb12-ee96-449c-a4e2-96a3d09d36d8","accountId":"6af1bab09fd34713f47e8db4","bookingId":"6af1bab19fd34713f47e8dc1","transactionId":"6af1bab19fd34713f47e8dc3"}
+{"timestamp":"2026-11-09T12:21:05.361Z","level":"warn","event":"api.error","requestId":"a0fc8948-c203-4089-bab1-7cf4aff627fa","method":"GET","status":403}
+{"timestamp":"2026-11-09T12:21:05.806Z","level":"warn","event":"api.error","requestId":"41860a35-8311-4c7b-b419-5713270d414b","method":"GET","status":429}
+{"timestamp":"2026-11-09T12:21:05.828Z","level":"info","event":"auth.logout","requestId":"97ef447e-c636-4d8a-842b-fcb34e49ceb5","accountId":"6af1baaf9fd34713f47e8db2"}
+{"timestamp":"2026-11-09T12:21:05.837Z","level":"warn","event":"api.error","requestId":"06d7161b-7936-4b0c-a865-2be30b88dd49","method":"GET","status":401}
