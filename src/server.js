@@ -1,4 +1,5 @@
 const fs = require('node:fs');
+const http = require('node:http');
 const https = require('node:https');
 
 const User = require('./models/User');
@@ -10,40 +11,32 @@ const Gig = require('./models/Gig');
 const Booking = require('./models/Booking');
 const Transaction = require('./models/Transaction');
 const RevokedToken = require('./models/RevokedToken');
+const audit = require('./utils/audit');
 
 async function startServer() {
   config.jwtSecret();
 
-  const credentials = {
+  const credentials = config.behindProxy ? null : {
     key: fs.readFileSync(config.privateKeyPath),
     cert: fs.readFileSync(config.certificatePath),
     minVersion: 'TLSv1.2'
   };
 
   await database.connect(config.mongodbUri);
-  await User.init();
-  await Gig.init();
-  await Promise.all([
-  Booking.init(),
-  Transaction.init(),
-  RevokedToken.init()
-]);
+  await Promise.all([User.init(), Gig.init(), Booking.init(), Transaction.init(), RevokedToken.init()]);
 
-  const server = https.createServer(credentials, app);
+  const server = credentials ? https.createServer(credentials, app) : http.createServer(app);
 
   server.on('error', async () => {
-    console.error(
-      'Unable to start HTTPS. Check whether port 3443 is already in use.'
-    );
+    audit('api.listen_failed', { port: config.port }, 'error');
 
     await database.disconnect();
     process.exit(1);
   });
 
-  server.listen(config.port, '127.0.0.1', () => {
-    console.log(
-      `HustleHub+ API running at https://localhost:${config.port}`
-    );
+  const host = config.behindProxy ? '0.0.0.0' : '127.0.0.1';
+  server.listen(config.port, host, () => {
+    audit('api.started', { port: config.port, transport: credentials ? 'https' : 'http' });
   });
 
   let stopping = false;
@@ -52,7 +45,7 @@ async function startServer() {
     if (stopping) return;
     stopping = true;
 
-    console.log('Stopping the API...');
+    audit('api.stopping', {});
 
     server.close(async () => {
       await database.disconnect();
@@ -65,9 +58,7 @@ async function startServer() {
 }
 
 startServer().catch(async () => {
-  console.error(
-    'Startup failed. Check .env, generate the HTTPS certificate, and ensure MongoDB is running.'
-  );
+  audit('api.startup_failed', {}, 'error');
 
   await database.disconnect();
   process.exit(1);

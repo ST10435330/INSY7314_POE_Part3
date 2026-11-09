@@ -1,0 +1,70 @@
+services:
+  mongo:
+    image: mongo:7.0.24
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ping:1}).ok ? 0 : 1)"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  mongo-init:
+    image: mongo:7.0.24
+    depends_on:
+      mongo:
+        condition: service_healthy
+    entrypoint: ["mongosh", "mongodb://mongo:27017/?directConnection=true", "--quiet", "--eval"]
+    command:
+      - |
+        if (!db.hello().setName) {
+          try {
+            rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongo:27017' }] });
+          } catch (error) {
+            if (error.codeName !== 'AlreadyInitialized') throw error;
+          }
+        }
+        for (let attempt = 0; attempt < 30; attempt++) {
+          if (db.hello().isWritablePrimary) quit(0);
+          sleep(1000);
+        }
+        quit(1);
+
+  api:
+    build: .
+    init: true
+    environment:
+      PORT: "3000"
+      JWT_SECRET: "${JWT_SECRET:?Set a strong JWT_SECRET in .env or .env.compose}"
+      MONGODB_URI: "mongodb://mongo:27017/hustlehub?replicaSet=rs0"
+      ALLOWED_ORIGIN: "http://localhost:${WEB_PORT:-8080}"
+      BEHIND_PROXY: "true"
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/ready').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/health"]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+
+volumes:
+  mongo-data:

@@ -22,6 +22,7 @@ function requireSecureSecret() {
 
 module.exports = {
   port: Number(process.env.PORT) || 3443,
+  behindProxy: process.env.BEHIND_PROXY === 'true',
   nodeEnv: process.env.NODE_ENV || 'development',
 
   mongodbUri: process.env.MONGODB_URI,

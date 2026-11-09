@@ -14,6 +14,7 @@ const financeRoutes = require('./routes/financeRoutes');
 
 const app = express();
 app.disable('x-powered-by');
+if (config.behindProxy) app.set('trust proxy', 1);
 
 app.use((req, res, next) => {
   req.requestId = randomUUID();
